@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Prototype D — Indiana Zooniversity mega menu. Desktop menus open on hover.
+  Live: https://manselldesign.github.io/Prototype-MegaMenu-Hover/
+  Hub: https://basham.github.io/rivet-2026-06-17/
+-->
+<title>Indiana Zooniversity — Mega menu (hover)</title>
+<meta name="description" content="Prototype D: Indiana Zooniversity mega menu that opens on hover. Live at https://manselldesign.github.io/Prototype-MegaMenu-Hover/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,350..825&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #990000;
+    --crimson-dk: #6D0808;
+    --cream: #F0E1CC;
+    --ink: #1F2528;
+    --body: #343C42;
+    --white: #fff;
+    --header-pad: 16px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--white);
+    font-family: "Roboto Flex", system-ui, sans-serif;
+    font-variation-settings: "wght" 350, "wdth" 110, "opsz" 16;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  body.lock { overflow: hidden; }
+  a { color: inherit; }
+  :focus-visible {
+    outline: 2px solid var(--crimson);
+    outline-offset: 2px;
+  }
+  .skip {
+    position: absolute;
+    left: 16px;
+    top: -40px;
+    background: var(--ink);
+    color: var(--white);
+    padding: 8px 12px;
+    z-index: 80;
+  }
+  .skip:focus { top: 8px; }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--white);
+    border-bottom: 1px solid var(--cream);
+  }
+  .header-bar { padding: 24px var(--header-pad) 0; }
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px 16px;
+  }
+  .lockup {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--ink);
+    min-width: 0;
+  }
+  .lockup svg { flex: 0 0 auto; display: block; }
+  .lockup-name {
+    margin: 0;
+    font-size: 16px;
+    line-height: 16px;
+    letter-spacing: 0.25px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-variation-settings: "wght" 700, "wdth" 35, "opsz" 14;
+  }
+  .utilities {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto;
+  }
+  .util-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--crimson);
+    background: var(--white);
+    color: var(--crimson);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 20px;
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 14;
+    white-space: nowrap;
+  }
+  .util-btn:hover { background: var(--crimson); color: var(--white); }
+  .util-btn:hover .arrow path { fill: var(--white); }
+  .icon-btn {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ink);
+    background: var(--white);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .icon-btn:hover { background: var(--ink); }
+  .icon-btn:hover svg path { fill: var(--white); }
+  .icon-btn[aria-expanded="true"] { background: var(--ink); }
+  .icon-btn[aria-expanded="true"] svg path { fill: var(--white); }
+  .menu-btn { display: none; }
+
+  .nav-row { padding: 0 24px 16px; }
+  .primary-nav { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; }
+  .nav-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 2px 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ink);
+    text-decoration: none;
+    font-variation-settings: "wght" 350, "wdth" 115, "opsz" 14;
+    box-shadow: inset 0 -2px 0 transparent;
+  }
+  .nav-link:hover { text-decoration: underline; text-underline-offset: 5px; }
+  .nav-link.is-open {
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 14;
+    text-decoration: none;
+    box-shadow: inset 0 -2px 0 var(--crimson);
+  }
+
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--white);
+    border-top: 1px solid var(--cream);
+    box-shadow: 0 24px 40px rgba(31, 37, 40, 0.14);
+    max-height: min(70vh, 640px);
+    overflow: auto;
+    z-index: 41;
+  }
+  .mega-inner {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+    gap: 40px 48px;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px 40px 40px;
+  }
+  .mega-eyebrow, .hero-eyebrow, .page-eyebrow {
+    margin: 0 0 12px;
+    font-family: "Roboto Mono", ui-monospace, monospace;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--crimson);
+    font-weight: 400;
+  }
+  .mega-title {
+    display: inline-block;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 29px;
+    line-height: 32px;
+    font-variation-settings: "wght" 700, "wdth" 100, "opsz" 29;
+  }
+  .mega-title:hover { color: var(--crimson); }
+  .mega-lede, .lede {
+    margin: 12px 0 0;
+    color: var(--body);
+    font-size: 16px;
+    line-height: 24px;
+    font-variation-settings: "wght" 350, "wdth" 110, "opsz" 16;
+  }
+  .mega-groups {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 32px;
+    align-content: start;
+  }
+  .mega-l2 {
+    display: inline-block;
+    margin: 0 0 8px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 16px;
+    line-height: 24px;
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 16;
+  }
+  .mega-l2:hover { color: var(--crimson); }
+  .mega-sub { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .mega-sub a {
+    color: var(--body);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 20px;
+    font-variation-settings: "wght" 350, "wdth" 110, "opsz" 14;
+  }
+  .mega-sub a:hover { color: var(--crimson); text-decoration: underline; text-underline-offset: 3px; }
+
+  .search-panel { max-width: 800px; margin: 0 auto; padding: 28px 40px 36px; }
+  .search-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 14;
+  }
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--ink);
+    padding: 0 12px;
+    height: 48px;
+  }
+  .search-field input {
+    flex: 1;
+    border: 0;
+    outline: none;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--ink);
+    background: transparent;
+    font-variation-settings: "wght" 350, "wdth" 110, "opsz" 16;
+  }
+  .search-results { list-style: none; margin: 16px 0 0; padding: 0; display: grid; }
+  .search-results a {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--cream);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .search-results a:hover { color: var(--crimson); }
+  .search-parent {
+    color: var(--body);
+    font-family: "Roboto Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .search-empty { color: var(--body); margin: 16px 0 0; }
+
+  .scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 37, 40, 0.45);
+    z-index: 30;
+  }
+
+  .drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(420px, 100%);
+    background: var(--white);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -12px 0 32px rgba(31, 37, 40, 0.18);
+  }
+  .drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 20px 12px;
+    border-bottom: 1px solid var(--cream);
+  }
+  .drawer-title {
+    margin: 0;
+    font-size: 23px;
+    line-height: 28px;
+    font-variation-settings: "wght" 700, "wdth" 100, "opsz" 23;
+  }
+  .drawer-body { padding: 16px 20px 32px; overflow: auto; }
+  .drawer-search { margin-bottom: 16px; }
+  .acc { border-bottom: 1px solid var(--cream); }
+  .acc-row { display: flex; align-items: stretch; }
+  .acc-link, .acc-toggle {
+    background: none;
+    border: 0;
+    color: var(--ink);
+    text-align: left;
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 24px;
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 20;
+  }
+  .acc-link { flex: 1; padding: 16px 8px 16px 0; }
+  .acc-link:hover { color: var(--crimson); }
+  .acc-toggle {
+    width: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .acc-toggle svg { transition: transform 0.15s ease; }
+  .acc-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+  .acc-panel { display: grid; gap: 4px; padding: 0 0 16px 12px; }
+  .acc-l2, .acc-l3 {
+    text-decoration: none;
+    color: var(--ink);
+    padding: 6px 0;
+  }
+  .acc-l2 { font-variation-settings: "wght" 600, "wdth" 115, "opsz" 16; }
+  .acc-l3 { color: var(--body); padding-left: 12px; font-size: 15px; }
+  .acc-l2:hover, .acc-l3:hover { color: var(--crimson); }
+  .drawer-utils { display: grid; gap: 8px; margin-top: 20px; }
+  .drawer-utils .util-btn { justify-content: center; height: 44px; }
+
+  .page { min-height: calc(100vh - 180px); }
+  .hero { padding: 72px 24px 0; text-align: center; }
+  .hero h1 {
+    margin: 0 auto;
+    max-width: 18ch;
+    color: var(--crimson);
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1.02;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    font-variation-settings: "wght" 825, "wdth" 100, "opsz" 54;
+  }
+  .hero .lede { max-width: 42rem; margin: 20px auto 0; font-size: 20px; line-height: 28px; }
+  .btn-strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    height: 48px;
+    padding: 0 16px;
+    background: var(--crimson);
+    color: var(--white);
+    text-decoration: none;
+    font-size: 16px;
+    line-height: 24px;
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 16;
+  }
+  .btn-strong:hover { background: var(--crimson-dk); }
+  .hero-figure { margin: 48px auto 0; max-width: 1280px; padding: 0 24px 64px; }
+  .hero-figure img { display: block; width: 100%; height: auto; }
+
+  .interior { max-width: 1100px; margin: 0 auto; padding: 40px 24px 72px; }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 20px; padding: 0; list-style: none; font-size: 14px; line-height: 20px; }
+  .crumbs a { color: var(--body); text-decoration: none; }
+  .crumbs a:hover { color: var(--crimson); text-decoration: underline; }
+  .crumbs span[aria-hidden] { color: var(--cream); }
+  .interior h1 {
+    margin: 0;
+    max-width: 20ch;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.05;
+    font-variation-settings: "wght" 700, "wdth" 100, "opsz" 48;
+  }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 32px; }
+  .card {
+    display: block;
+    padding: 20px;
+    border: 1px solid var(--cream);
+    text-decoration: none;
+    color: inherit;
+    min-height: 100%;
+  }
+  .card:hover { border-color: var(--crimson); }
+  .card strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 18px;
+    line-height: 24px;
+    font-variation-settings: "wght" 600, "wdth" 115, "opsz" 18;
+  }
+  .card p { margin: 0; color: var(--body); font-size: 15px; line-height: 22px; }
+
+  .site-footer {
+    background: var(--crimson);
+    color: var(--white);
+    padding: 28px 40px;
+  }
+  .site-footer a { color: var(--white); }
+  .footer-row { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+  .footer-lockup { display: flex; align-items: center; gap: 10px; font-variation-settings: "wght" 700, "wdth" 35; letter-spacing: 0.25px; text-transform: uppercase; font-size: 14px; }
+  .footer-note { margin: 12px 0 0; font-size: 14px; line-height: 20px; max-width: 62ch; }
+  .footer-note a { text-underline-offset: 3px; }
+
+  @media (max-width: 1100px) {
+    .mega-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 1023px) {
+    .header-bar { padding-top: 16px; }
+    .header-row { padding-bottom: 16px; }
+    .util-btn, .nav-row { display: none; }
+    .menu-btn { display: inline-flex; }
+    .mega { display: none !important; }
+    .hero { padding-top: 40px; }
+    .hero h1 { max-width: 14ch; }
+  }
+  @media (max-width: 420px) {
+    .lockup-name { font-size: 13px; letter-spacing: 0; }
+    .header-row { padding-left: 8px; padding-right: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .acc-toggle svg { transition: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header" id="site-header">
+  <div class="header-bar">
+    <div class="header-row">
+      <a class="lockup" href="#/" data-nav>
+        <svg width="41" height="48" viewBox="0 0 41 48" aria-hidden="true">
+          <path d="M41 0H0V48H41V0Z" fill="#990000"/>
+          <path d="M25 11.5V14H27V28.5H23V9.5H25V7H16V9.5H18V28.5H14V14H16V11.5H7V14H9V30.5L12.5 34H18V37.5H16V41H25V37.5H23V34H28.5L32 30.5V14H34V11.5H25Z" fill="#fff"/>
+        </svg>
+        <p class="lockup-name">Indiana Zooniversity</p>
+      </a>
+      <div class="utilities">
+        <a class="util-btn" id="util-work" href="#/internships" data-nav>Work at the Zoo <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#990000" d="M1 7h10.844L7.737 2.146 9.263.854 15.31 8l-6.047 7.146-1.526-1.292L11.844 9H1V7Z"/></svg></a>
+        <a class="util-btn" id="util-member" href="#/membership" data-nav>Become a Member <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#990000" d="M1 7h10.844L7.737 2.146 9.263.854 15.31 8l-6.047 7.146-1.526-1.292L11.844 9H1V7Z"/></svg></a>
+        <button class="icon-btn" id="search-toggle" type="button" aria-expanded="false" aria-controls="mega">
+          <span class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#1F2528" d="M7 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM0 7a7 7 0 1 1 12.606 4.192l3.101 3.1-1.414 1.415-3.1-3.1A7 7 0 0 1 0 7Z"/></svg>
+        </button>
+        <button class="icon-btn menu-btn" id="menu-toggle" type="button" aria-expanded="false" aria-controls="drawer">
+          <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Menu</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#1F2528" d="M15 4H1V2h14v2ZM15 9H1V7h14v2ZM1 14h14v-2H1v2Z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary"></nav>
+    </div>
+  </div>
+  <div class="mega" id="mega" hidden></div>
+</header>
+<div class="scrim" id="scrim" hidden></div>
+<div class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <div class="drawer-head">
+    <h2 class="drawer-title" id="drawer-title">Menu</h2>
+    <button class="icon-btn" id="drawer-close" type="button" aria-label="Close menu">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#1F2528" d="m3.5 2.086 4.5 4.5 4.5-4.5L13.914 3.5 9.414 8l4.5 4.5-1.414 1.414-4.5-4.5-4.5 4.5L2.086 12.5l4.5-4.5-4.5-4.5L3.5 2.086Z"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+<main id="main" class="page" tabindex="-1"></main>
+<footer class="site-footer">
+  <div class="footer-row">
+    <div class="footer-lockup">
+      <svg width="28" height="32" viewBox="0 0 41 48" aria-hidden="true">
+        <path d="M41 0H0V48H41V0Z" fill="#fff"/>
+        <path d="M25 11.5V14H27V28.5H23V9.5H25V7H16V9.5H18V28.5H14V14H16V11.5H7V14H9V30.5L12.5 34H18V37.5H16V41H25V37.5H23V34H28.5L32 30.5V14H34V11.5H25Z" fill="#990000"/>
+      </svg>
+      Indiana Zooniversity
+    </div>
+  </div>
+  <p class="footer-note">Prototype D — the mega menu opens on hover from the top navigation. On a narrow screen, the same sections open in a tap drawer. Hub: <a href="https://basham.github.io/rivet-2026-06-17/">Rivet nav prototypes</a>.</p>
+</footer>
+<script type="application/json" id="site-data">{
+  "home": {
+    "slug": "index",
+    "label": "Home",
+    "heading": "Connect with wildlife from around the world",
+    "lede": "Explore animal habitats, learn about wildlife protection, and enjoy fun activities with your family every day.",
+    "eyebrow": "Metropolitan Zoo",
+    "image": "https://basham.github.io/rivet-2026-06-17/prototype-05/_astro/main.DTW3cQCE_l8gWE.webp",
+    "alt": "Boy with backpack spreads his arms out wide, enthralled with the fish swimming in front of him on the other side of the room-sized aquarium glass.",
+    "actionLabel": "Plan your visit",
+    "actionSlug": "plan-your-visit"
+  },
+  "sections": [
+    {
+      "slug": "plan-your-visit",
+      "label": "Plan Your Visit",
+      "heading": "PLAN YOUR VISIT",
+      "lede": "Everything you need to make the day easy — hours, tickets, parking, maps, and the small details that keep a zoo trip running smoothly.",
+      "eyebrow": "BEFORE YOU GO",
+      "children": [
+        {
+          "slug": "hours-admission",
+          "label": "Hours & Admission",
+          "heading": "When we're open and what it costs",
+          "lede": "Hours shift with the seasons and the daylight. Check the current calendar before you travel, especially around holidays and severe weather.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "daily-seasonal-hours",
+              "label": "Daily & Seasonal Hours",
+              "heading": "Hours change four times a year",
+              "lede": "The zoo runs on four seasonal schedules built around daylight and animal comfort. Summer runs longest; winter runs shortest.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "tickets-pricing",
+              "label": "Tickets & Pricing",
+              "heading": "Tickets, rates, and what's included",
+              "lede": "One admission ticket covers every habitat, keeper talk, and daily demonstration. A handful of encounters and rides carry a separate fee.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "getting-here",
+          "label": "Getting Here",
+          "heading": "Finding us and getting in",
+          "lede": "The zoo sits fifteen minutes from downtown with its own highway exit. Parking, transit, and rideshare all arrive at different gates.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "directions-address",
+              "label": "Directions & Address",
+              "heading": "Address and driving routes",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "parking",
+              "label": "Parking",
+              "heading": "Where to leave the car",
+              "lede": "Parking is free and never sells out, though the closest rows fill by 11 a.m. on summer weekends. Lots are lettered and marked with animal icons.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "transit-bike-rideshare",
+              "label": "Transit, Bike & Rideshare",
+              "heading": "Arriving without a car",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "maps-guides",
+          "label": "Maps & Guides",
+          "heading": "Find your way around",
+          "lede": "The zoo is a single loop with four spurs, so it's hard to get truly lost — but knowing where the shortcuts are saves a lot of walking.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "interactive-zoo-map",
+              "label": "Interactive Zoo Map",
+              "heading": "Live map with today's closures",
+              "lede": "The interactive map shows current habitat status, restroom and dining locations, and the next scheduled keeper talk at each stop.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "suggested-routes",
+              "label": "Suggested Routes",
+              "heading": "Pre-planned walking routes",
+              "lede": "Three routes built around how much time you have. Each is a continuous loop that ends back at the central plaza.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "accessibility",
+          "label": "Accessibility",
+          "heading": "Access for every visitor",
+          "lede": "The full main loop is step-free and paved. Sensory guides, assistive listening, and equipment rentals are available at no cost.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "mobility-wheelchair-access",
+              "label": "Mobility & Wheelchair Access",
+              "heading": "Getting around on wheels",
+              "lede": "Every habitat viewing area is reachable by a step-free route. Two pathway spurs have grades above five percent and are marked on the map.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "sensory-friendly-visits",
+              "label": "Sensory-Friendly Visits",
+              "heading": "Quieter ways to visit",
+              "lede": "Free sensory kits, a printed guide rating each habitat for noise and crowding, and two dedicated quiet rooms are available every day.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "service-animals",
+              "label": "Service Animals",
+              "heading": "Bringing a service animal",
+              "lede": "Trained service animals are welcome throughout the zoo, with a small number of habitats where they can't safely enter. Relief areas are marked on the map.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "dining-shopping",
+          "label": "Dining & Shopping",
+          "heading": "Eat, drink, and take something home",
+          "lede": "Four dining locations and three shops sit along the main loop, so you're never more than a few minutes from food or a restroom.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "restaurants-cafes",
+              "label": "Restaurants & Cafés",
+              "heading": "Sit-down and grab-and-go",
+              "lede": "Two full restaurants, a coffee café, and seasonal snack carts. Outside food is welcome too, and picnic tables are available near the west lawn.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "gift-shops",
+              "label": "Gift Shops",
+              "heading": "Souvenirs and supporting the zoo",
+              "lede": "Three shops along the loop, with proceeds funding animal care and conservation programs. Members save ten percent on everything.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "zoo-rules-policies",
+          "label": "Zoo Rules & Policies",
+          "heading": "House rules",
+          "lede": "A short list of policies that keep animals safe and visits pleasant. Staff are happy to answer questions about any of them.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "bags-prohibited-items",
+              "label": "Bags & Prohibited Items",
+              "heading": "What you can and can't bring",
+              "lede": "All bags are visually inspected at the gate. Outside food and drink are welcome; a short list of items is not.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "weather-closures",
+              "label": "Weather & Closures",
+              "heading": "Rain, heat, and lightning",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "animals-habitats",
+      "label": "Animals & Habitats",
+      "heading": "DISCOVER ANIMALS & HABITATS",
+      "lede": "Embark on an unforgettable journey across vibrant natural ecosystems and meet hundreds of extraordinary species from every corner of the globe.",
+      "eyebrow": "ZOO REGIONS",
+      "children": [
+        {
+          "slug": "africa",
+          "label": "Africa",
+          "heading": "Uncover the wonder of Africa",
+          "lede": "Step into the heart of the savanna. From the mighty roar of our lion pride to the lush canopy of the rainforest, your ultimate wildlife adventure begins here.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "grasslands-plains",
+              "label": "Grasslands & Plains",
+              "heading": "Life on the open savanna",
+              "lede": "Twelve acres of rolling grassland shared by predators and grazers across sightlines that mirror the real thing. This is the largest single habitat at the zoo.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "rainforests-woods",
+              "label": "Rainforests & Woods",
+              "heading": "Under the canopy",
+              "lede": "A humid, layered forest habitat with a raised walkway that puts you at mid-canopy height. Expect to hear the residents before you see them.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "deserts-dry-lands",
+              "label": "Deserts & Dry Lands",
+              "heading": "Life in the heat",
+              "lede": "An arid habitat of sand, rock, and hardy scrub built around species that manage water rather than avoid it. Warmest part of the zoo year-round.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "asia",
+          "label": "Asia",
+          "heading": "Forests, ridges, and river valleys",
+          "lede": "Asia's habitats span dense bamboo, temperate mountain forest, and warm wetland. It is the coolest, shadiest walk in the zoo on a hot day.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "bamboo-forest",
+              "label": "Bamboo Forest",
+              "heading": "Twenty tons of bamboo a year",
+              "lede": "A dense grove of live bamboo shading both panda species. The bamboo is a working crop — we grow most of what they eat on site.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "tiger-ridge",
+              "label": "Tiger Ridge",
+              "heading": "The largest cat in the world",
+              "lede": "A forested ridge habitat with a deep swimming pool, elevated platforms, and long sightlines through the trees. Tigers are strongest swimmers of any big cat.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "asian-wetlands",
+              "label": "Asian Wetlands",
+              "heading": "Water, reeds, and wading birds",
+              "lede": "A shallow-water habitat of reed beds and mudflats supporting cranes, storks, and waterfowl across a boardwalk that crosses the marsh.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "arctic-oceans",
+          "label": "Arctic & Oceans",
+          "heading": "Cold water and colder coasts",
+          "lede": "Our largest indoor complex, combining a polar shoreline, a penguin colony, and eleven aquarium galleries under one roof with underwater viewing throughout.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "polar-shores",
+              "label": "Polar Shores",
+              "heading": "A shoreline built for a {1,000}-pound swimmer",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "penguin-coast",
+              "label": "Penguin Coast",
+              "heading": "Two colonies, two climates",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "tide-pools-touch-tank",
+              "label": "Tide Pools & Touch Tank",
+              "heading": "Put your hands in the water",
+              "lede": "A shallow open tank of sea stars, urchins, anemones, and hermit crabs, staffed continuously so you always have someone to ask.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "south-america",
+          "label": "South America",
+          "heading": "Flooded forest to mountain air",
+          "lede": "From the Amazon's seasonally flooded understory to the thin air of the high Andes, this region covers the widest elevation range at the zoo.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "amazon-flooded-forest",
+              "label": "Amazon Flooded Forest",
+              "heading": "A forest that spends half the year underwater",
+              "lede": "Our flooded-forest habitat rises and falls by four feet across the year, moving the waterline up the tree trunks exactly as it does in the wild.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "andes-highlands",
+              "label": "Andes Highlands",
+              "heading": "Thin air and hard ground",
+              "lede": "A rocky highland habitat for Andean bears, alpaca, and highland birds, built on the steepest terrain on the zoo campus.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "tropical-aviary",
+              "label": "Tropical Aviary",
+              "heading": "Walk into the flock",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "australia-islands",
+          "label": "Australia & Islands",
+          "heading": "Marsupials, monitors, and island birds",
+          "lede": "Australia's outback and the forested islands to its north, covering species found nowhere else on earth. Home to two of our three walk-through habitats.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "outback-walkabout",
+              "label": "Outback Walkabout",
+              "heading": "Share the path with the kangaroos",
+              "lede": "A walk-through habitat where a mob of red kangaroos and a group of emu move freely across the same path you're standing on.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "lorikeet-landing",
+              "label": "Lorikeet Landing",
+              "heading": "Feed a rainbow lorikeet from your hand",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "animals-az",
+          "label": "Animals A–Z",
+          "heading": "Every species, alphabetically",
+          "lede": "",
+          "eyebrow": "",
+          "children": []
+        },
+        {
+          "slug": "animal-care-habitat-design",
+          "label": "Animal Care & Habitat Design",
+          "heading": "The work behind the glass",
+          "lede": "Sixty-two people care for the animals here — keepers, veterinarians, nutritionists, and horticulturists. Most of their work happens before the gates open.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "nutrition-commissary",
+              "label": "Nutrition & Commissary",
+              "heading": "{4,000} pounds of food a week",
+              "lede": "Every animal eats a diet formulated for its species, age, and health status, prepared fresh daily in an on-site commissary kitchen.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "veterinary-hospital",
+              "label": "Veterinary Hospital",
+              "heading": "A full hospital on site",
+              "lede": "Our animal hospital has surgery, radiology, a laboratory, and quarantine housing, staffed by three veterinarians and five technicians year-round.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "enrichment-training",
+              "label": "Enrichment & Training",
+              "heading": "Giving animals something to do",
+              "lede": "Every animal receives daily enrichment designed for its species — puzzle feeders, scent trails, novel objects, and training sessions that double as medical care.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "kids-schools",
+      "label": "Kids & Schools",
+      "heading": "KIDS & SCHOOLS",
+      "lede": "Field trips, camps, classroom resources, and play spaces built around one idea — that a child who meets an animal remembers it for life.",
+      "eyebrow": "LEARNING PROGRAMS",
+      "children": [
+        {
+          "slug": "field-trips",
+          "label": "Field Trips",
+          "heading": "Bring your class to the zoo",
+          "lede": "Guided and self-guided options for every grade, with discounted admission, reserved arrival windows, and a separate entrance that keeps groups out of the general queue.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "plan-a-field-trip",
+              "label": "Plan a Field Trip",
+              "heading": "Everything you need before booking",
+              "lede": "Field trips run September through May, Tuesday through Friday. Most schools book eight to twelve weeks ahead; spring dates fill fastest.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "guided-programs-by-grade",
+              "label": "Guided Programs by Grade",
+              "heading": "Programs matched to grade level",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "self-guided-visits",
+              "label": "Self-Guided Visits",
+              "heading": "Bring your own plan",
+              "lede": "Self-guided groups get the discounted rate, reserved arrival window, and a grade-appropriate activity packet, but no educator-led session.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "classroom-resources",
+          "label": "Classroom Resources",
+          "heading": "Free materials for your classroom",
+          "lede": "Standards-aligned lesson plans, printable activities, and recorded habitat tours — all free, all downloadable, all usable whether or not you ever visit.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "lesson-plans",
+              "label": "Lesson Plans",
+              "heading": "Ready-to-teach units",
+              "lede": "Multi-day units built by classroom teachers and reviewed by our education team, complete with objectives, materials lists, and assessments.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "virtual-field-trips",
+              "label": "Virtual Field Trips",
+              "heading": "A keeper in your classroom",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "camps-classes",
+          "label": "Camps & Classes",
+          "heading": "Days that belong to the kids",
+          "lede": "Week-long summer camps, single-day break camps, and family workshops — all with behind-the-scenes access that regular admission doesn't include.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "summer-camp",
+              "label": "Summer Camp",
+              "heading": "A week inside the zoo",
+              "lede": "Nine week-long sessions running June through August for ages 5 to 13, grouped by age band with age-appropriate access and activities.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "school-break-camps",
+              "label": "School Break Camps",
+              "heading": "Single days off, covered",
+              "lede": "One-day camps on scheduled school break days in fall, winter, and spring for ages 5 to 12, with the same structure as summer camp compressed into a day.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "teen-programs",
+          "label": "Teen Programs",
+          "heading": "For teens who want more than a visit",
+          "lede": "Volunteer roles, career exploration, and paid summer positions for students who are seriously interested in animal care and conservation work.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "teen-volunteer-corps",
+              "label": "Teen Volunteer Corps",
+              "heading": "Work the floor alongside staff",
+              "lede": "Teens ages 14 to 18 commit to one shift a week for a full season, running interpretive carts, assisting educators, and supporting keeper tasks.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "zoo-career-exploration",
+              "label": "Zoo Career Exploration",
+              "heading": "What the jobs actually are",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "play-discovery-zones",
+          "label": "Play & Discovery Zones",
+          "heading": "Places built for running around",
+          "lede": "Two dedicated play areas where the rule is the opposite of the rest of the zoo — touch things, climb things, be loud.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "discovery-playground",
+              "label": "Discovery Playground",
+              "heading": "Climb, dig, splash",
+              "lede": "A nature-themed play structure with a climbing web, a dig pit, a water channel, and a shaded seating deck for the adults.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "childrens-barnyard",
+              "label": "Children's Barnyard",
+              "heading": "Meet a goat",
+              "lede": "A walk-in contact yard with pygmy goats, sheep, and a miniature donkey, staffed continuously with brushes available for anyone who wants to groom.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "birthday-parties",
+          "label": "Birthday Parties",
+          "heading": "Have your party here",
+          "lede": "Two-hour party packages with a private space, admission for the group, and an animal encounter the birthday child gets to lead.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "party-packages",
+              "label": "Party Packages",
+              "heading": "Two ways to celebrate",
+              "lede": "A standard package built around an animal visit, and a premium package that takes the birthday child behind the scenes. Both run two hours.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "book-a-party",
+              "label": "Book a Party",
+              "heading": "Reserve your date",
+              "lede": "Parties run Saturdays and Sundays year-round with morning and afternoon slots. Book at least three weeks ahead; spring weekends go fastest.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "conservation-wildlife-care",
+      "label": "Conservation & Wildlife Care",
+      "heading": "What we do beyond the fence",
+      "lede": "Fourteen field projects across four continents, funded by admission and donations and staffed in part by our own keepers and veterinarians.",
+      "eyebrow": "",
+      "children": [
+        {
+          "slug": "field-conservation-projects",
+          "label": "Field Conservation Projects",
+          "heading": "Where the money goes",
+          "lede": "Each project is a multi-year partnership with an organization already working in that landscape. We fund and staff; they lead.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "africa-projects",
+              "label": "Africa Projects",
+              "heading": "Six projects across East and Southern Africa",
+              "lede": "Our largest regional commitment, covering lion coexistence, rhino protection, and community-led habitat work across four countries.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "local-regional-projects",
+              "label": "Local & Regional Projects",
+              "heading": "Conservation close to home",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "species-survival-plans",
+          "label": "Species Survival Plans",
+          "heading": "Breeding programs across institutions",
+          "lede": "",
+          "eyebrow": "",
+          "children": []
+        },
+        {
+          "slug": "sustainability-at-the-zoo",
+          "label": "Sustainability at the Zoo",
+          "heading": "Our own footprint",
+          "lede": "Solar generation, a closed-loop water system in the aquarium, composting of all animal waste, and a hard elimination of single-use plastics across the grounds.",
+          "eyebrow": "",
+          "children": []
+        }
+      ]
+    },
+    {
+      "slug": "events-activities",
+      "label": "Events & Activities",
+      "heading": "EVENTS & ACTIVITIES",
+      "lede": "Something happens here every hour the gates are open — keeper talks, feedings, encounters, and after-hours events that turn the whole zoo into a different place.",
+      "eyebrow": "WHAT'S ON",
+      "children": [
+        {
+          "slug": "daily-activities",
+          "label": "Daily Activities",
+          "heading": "What's happening today",
+          "lede": "Between fifteen and twenty programs run every day, all free with admission and none requiring a reservation. Times shift slightly with weather and animal behavior.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "todays-schedule",
+              "label": "Today's Schedule",
+              "heading": "Every program, in order",
+              "lede": "The live daily schedule with times, locations, and any weather holds currently in effect. Updated every fifteen minutes throughout the day.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "keeper-talks",
+              "label": "Keeper Talks",
+              "heading": "Ten minutes with the person who knows",
+              "lede": "Short, informal talks given at the habitat rail by the keeper who works with those animals every day. Always ends with questions.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "feeding-demonstrations",
+              "label": "Feeding Demonstrations",
+              "heading": "Watch them eat",
+              "lede": "Seven scheduled feeding demonstrations a day, each narrated by the keeper doing the feeding. The most active animal behavior you'll see all day.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "animal-encounters",
+          "label": "Animal Encounters",
+          "heading": "Get closer than the rail",
+          "lede": "Ticketed experiences that put you inside or immediately beside a habitat with a keeper. Group sizes are small and most sell out in advance.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "giraffe-feeding",
+              "label": "Giraffe Feeding",
+              "heading": "Lettuce, at eye level",
+              "lede": "The most popular encounter at the zoo. Fifteen minutes on the elevated deck feeding the giraffe herd by hand, with a keeper alongside.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "behind-the-scenes-tours",
+              "label": "Behind-the-Scenes Tours",
+              "heading": "The half of the zoo you don't see",
+              "lede": "Guided tours into working areas — holding barns, commissary kitchens, aquarium life-support rooms — with the staff who work there.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "private-vip-experiences",
+              "label": "Private VIP Experiences",
+              "heading": "Book the whole thing privately",
+              "lede": "Any encounter or tour can be booked as a private experience for your group alone, with flexible timing and the option to combine multiple animals.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "seasonal-events",
+          "label": "Seasonal Events",
+          "heading": "Four events, four transformations",
+          "lede": "Each season brings a signature event that changes how the zoo looks, sounds, and runs. Three are included with admission; one is separately ticketed.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "spring-baby-animal-days",
+              "label": "Spring: Baby Animal Days",
+              "heading": "Everything is new in April",
+              "lede": "Spring births across the zoo, with a public naming vote, extended nursery viewing, and keeper talks focused on each new arrival.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "summer-zoo-nights-concert-series",
+              "label": "Summer: Zoo Nights Concert Series",
+              "heading": "Live music, open late",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "fall-boo-at-the-zoo",
+              "label": "Fall: Boo at the Zoo",
+              "heading": "Trick-or-treat among the animals",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "winter-wild-lights",
+              "label": "Winter: Wild Lights",
+              "heading": "A million lights after dark",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "adults-only-events",
+          "label": "Adults-Only Events",
+          "heading": "Evenings without the strollers",
+          "lede": "",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "brew-at-the-zoo",
+              "label": "Brew at the Zoo",
+              "heading": "{40} breweries, one evening",
+              "lede": "A late-summer tasting event with regional breweries set up along the main loop, plus food trucks and after-hours access to the savanna and aquarium.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "wild-wine-walk",
+              "label": "Wild Wine Walk",
+              "heading": "A walking tasting",
+              "lede": "A spring evening pairing wines with stations along the main loop, each hosted beside a habitat with a short keeper talk between pours.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "private-events-rentals",
+          "label": "Private Events & Rentals",
+          "heading": "Host your event here",
+          "lede": "",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "weddings",
+              "label": "Weddings",
+              "heading": "Say it with an audience",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "corporate-meetings",
+              "label": "Corporate Meetings",
+              "heading": "Meetings people show up to",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "picnics-reunions",
+              "label": "Picnics & Reunions",
+              "heading": "Casual gatherings on the lawn",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "event-calendar",
+          "label": "Event Calendar",
+          "heading": "Everything, by date",
+          "lede": "A single calendar covering daily programs, seasonal events, adults-only nights, and member previews for the next twelve months.",
+          "eyebrow": "",
+          "children": []
+        }
+      ]
+    },
+    {
+      "slug": "support-the-zoo",
+      "label": "Support the Zoo",
+      "heading": "SUPPORT THE ZOO",
+      "lede": "Membership, donations, volunteering, and partnership — the four ways this place stays funded and the animals stay cared for.",
+      "eyebrow": "WAYS TO GIVE",
+      "children": [
+        {
+          "slug": "membership",
+          "label": "Membership",
+          "heading": "Unlimited visits, all year",
+          "lede": "Membership covers admission for a full year, opens the gates thirty minutes early, and discounts nearly everything inside. Two visits and it's paid for.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "membership-levels",
+              "label": "Membership Levels",
+              "heading": "Four levels, one card",
+              "lede": "Levels differ by how many people they cover and how many guests you can bring. Every level includes unlimited admission and early entry.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "join-or-renew",
+              "label": "Join or Renew",
+              "heading": "Sign up or pick back up",
+              "lede": "New memberships activate immediately and can be used the same day. Renewals extend from your existing expiration date, so nothing is lost by renewing early.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "member-benefits",
+              "label": "Member Benefits",
+              "heading": "Everything membership gets you",
+              "lede": "Beyond unlimited admission — early entry, dining and shop discounts, reciprocal access at other zoos, and members-only event nights.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "donate",
+          "label": "Donate",
+          "heading": "Give directly",
+          "lede": "One-time gifts, monthly giving, animal adoptions, tribute gifts, and planned giving. Every dollar stays with animal care and conservation.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "make-a-gift",
+              "label": "Make a Gift",
+              "heading": "One-time donation",
+              "lede": "Give any amount, directed to general animal care or to a specific program. Gifts are tax-deductible and receipts are issued immediately.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "adopt-an-animal",
+              "label": "Adopt an Animal",
+              "heading": "Sponsor an individual animal",
+              "lede": "Symbolic adoption funds the actual care of one animal for a year — its diet, enrichment, and veterinary costs — and comes with a package about that specific animal.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "tribute-memorial-gifts",
+              "label": "Tribute & Memorial Gifts",
+              "heading": "Give in someone's name",
+              "lede": "Honor or memorial gifts with a notification card sent to the person or family you designate. Amounts are never disclosed.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "planned-giving",
+              "label": "Planned Giving",
+              "heading": "Include the zoo in your estate",
+              "lede": "Bequests, charitable trusts, and beneficiary designations that support animal care beyond your lifetime, with no cost during it.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "our-conservation-work",
+          "label": "Our Conservation Work",
+          "heading": "What we do beyond the fence",
+          "lede": "Fourteen field projects across four continents, funded by admission and donations and staffed in part by our own keepers and veterinarians.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "field-conservation-projects",
+              "label": "Field Conservation Projects",
+              "heading": "Where the money goes",
+              "lede": "Each project is a multi-year partnership with an organization already working in that landscape. We fund and staff; they lead.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "species-survival-plans",
+              "label": "Species Survival Plans",
+              "heading": "Breeding programs across institutions",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "sustainability-at-the-zoo",
+              "label": "Sustainability at the Zoo",
+              "heading": "Our own footprint",
+              "lede": "Solar generation, a closed-loop water system in the aquarium, composting of all animal waste, and a hard elimination of single-use plastics across the grounds.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "volunteer",
+          "label": "Volunteer",
+          "heading": "Give your time",
+          "lede": "Six hundred and eighty volunteers cover interpretation, horticulture, education, and animal care support. Most started knowing nothing about zoos.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "adult-volunteer-program",
+              "label": "Adult Volunteer Program",
+              "heading": "A real commitment, seriously supported",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "internships",
+              "label": "Internships",
+              "heading": "Paid internships for college students",
+              "lede": "Twelve-week paid internships in animal care, education, veterinary services, horticulture, and conservation science, offered each summer and fall.",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "corporate-partnership",
+          "label": "Corporate Partnership",
+          "heading": "Partner with the zoo",
+          "lede": "Sponsorship, habitat naming, employee engagement, and matching gift programs for businesses that want visible community presence.",
+          "eyebrow": "",
+          "children": [
+            {
+              "slug": "sponsorship-opportunities",
+              "label": "Sponsorship Opportunities",
+              "heading": "Where your name can appear",
+              "lede": "Event sponsorships, habitat naming rights, program underwriting, and seasonal campaign partnerships across a wide range of commitment levels.",
+              "eyebrow": "",
+              "children": []
+            },
+            {
+              "slug": "matching-gifts",
+              "label": "Matching Gifts",
+              "heading": "Double your donation",
+              "lede": "",
+              "eyebrow": "",
+              "children": []
+            }
+          ]
+        },
+        {
+          "slug": "annual-report-financials",
+          "label": "Annual Report & Financials",
+          "heading": "Open books",
+          "lede": "",
+          "eyebrow": "",
+          "children": []
+        }
+      ]
+    }
+  ]
+}</script>
+<script>
+(() => {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("site-data").textContent);
+  const SECTIONS = DATA.sections;
+  const bySlug = new Map();
+  const parentOf = new Map();
+  const indexEntry = (node, parent) => {
+    bySlug.set(node.slug, node);
+    if (parent) parentOf.set(node.slug, parent.slug);
+    (node.children || []).forEach((child) => indexEntry(child, node));
+  };
+  SECTIONS.forEach((section) => indexEntry(section, null));
+  bySlug.set("index", DATA.home);
+
+  const header = document.getElementById("site-header");
+  const nav = document.getElementById("primary-nav");
+  const mega = document.getElementById("mega");
+  const scrim = document.getElementById("scrim");
+  const drawer = document.getElementById("drawer");
+  const drawerBody = document.getElementById("drawer-body");
+  const main = document.getElementById("main");
+  const searchToggle = document.getElementById("search-toggle");
+  const menuToggle = document.getElementById("menu-toggle");
+  const desktopQuery = window.matchMedia("(min-width: 1024px)");
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+  const href = (slug) => (slug === "index" ? "#/" : "#/" + encodeURIComponent(slug));
+  const desktop = () => desktopQuery.matches;
+
+  let mode = null;
+  let megaSlug = null;
+  let closeTimer = 0;
+  const openAcc = new Set();
+
+  const chevron = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M6.263 15.146 12.31 8 6.263.854 4.737 2.146 9.69 8l-4.953 5.854 1.526 1.292Z"/></svg>';
+  const searchIcon = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#1F2528" d="M7 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM0 7a7 7 0 1 1 12.606 4.192l3.101 3.1-1.414 1.415-3.1-3.1A7 7 0 0 1 0 7Z"/></svg>';
+
+  SECTIONS.forEach((section) => {
+    const a = document.createElement("a");
+    a.className = "nav-link";
+    a.href = href(section.slug);
+    a.dataset.slug = section.slug;
+    a.dataset.nav = "";
+    a.textContent = section.label;
+    a.setAttribute("aria-expanded", "false");
+    a.setAttribute("aria-controls", "mega");
+    a.addEventListener("pointerenter", (event) => {
+      if (!desktop() || event.pointerType === "touch") return;
+      openMega(section.slug);
+    });
+    a.addEventListener("focus", () => {
+      if (desktop()) openMega(section.slug);
+    });
+    a.addEventListener("click", (event) => {
+      if (!desktop()) return;
+      if (mode !== "mega" || megaSlug !== section.slug) {
+        event.preventDefault();
+        openMega(section.slug);
+      }
+    });
+    nav.appendChild(a);
+  });
+
+  function sectionTrail(slug) {
+    const trail = [];
+    let current = slug;
+    const guard = new Set();
+    while (current && current !== "index" && !guard.has(current)) {
+      guard.add(current);
+      const node = bySlug.get(current);
+      if (!node) break;
+      trail.unshift(node);
+      current = parentOf.get(current);
+    }
+    return trail;
+  }
+
+  function paintChrome() {
+    const megaOpen = mode === "mega";
+    const searchOpen = mode === "search";
+    nav.querySelectorAll(".nav-link").forEach((link) => {
+      const on = megaOpen && link.dataset.slug === megaSlug;
+      link.classList.toggle("is-open", on);
+      link.setAttribute("aria-expanded", on ? "true" : "false");
+    });
+    searchToggle.setAttribute("aria-expanded", searchOpen ? "true" : "false");
+    menuToggle.setAttribute("aria-expanded", mode === "drawer" ? "true" : "false");
+    mega.hidden = !(megaOpen || searchOpen);
+    scrim.hidden = mode == null;
+    drawer.hidden = mode !== "drawer";
+    document.body.classList.toggle("lock", mode === "drawer");
+  }
+
+  function renderMega(section) {
+    const groups = (section.children || []).map((child) => {
+      const subs = (child.children || []).map((g) => `<li><a href="${href(g.slug)}" data-nav>${esc(g.label)}</a></li>`).join("");
+      return `<div class="mega-group"><a class="mega-l2" href="${href(child.slug)}" data-nav>${esc(child.label)}</a>${subs ? `<ul class="mega-sub">${subs}</ul>` : ""}</div>`;
+    }).join("");
+    const eyebrow = section.eyebrow ? `<p class="mega-eyebrow">${esc(section.eyebrow)}</p>` : "";
+    mega.innerHTML = `<div class="mega-inner"><div>${eyebrow}<a class="mega-title" href="${href(section.slug)}" data-nav>${esc(section.label)}</a>${section.lede ? `<p class="mega-lede">${esc(section.lede)}</p>` : ""}</div><div class="mega-groups">${groups}</div></div>`;
+  }
+
+  function searchHits(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const hits = [];
+    bySlug.forEach((node, slug) => {
+      if (slug === "index") return;
+      const blob = `${node.label} ${node.heading || ""} ${node.lede || ""}`.toLowerCase();
+      if (blob.includes(q)) hits.push(node);
+    });
+    return hits.slice(0, 12);
+  }
+
+  function renderSearch(preset) {
+    mega.innerHTML = `<form class="search-panel" id="search-form" role="search"><label class="search-label" for="site-search">Search the site</label><div class="search-field">${searchIcon}<input id="site-search" type="search" placeholder="Search the site" autocomplete="off"></div><div id="search-out"></div></form>`;
+    const input = document.getElementById("site-search");
+    const out = document.getElementById("search-out");
+    const draw = () => {
+      const hits = searchHits(input.value);
+      if (!input.value.trim()) { out.innerHTML = ""; return; }
+      if (!hits.length) { out.innerHTML = `<p class="search-empty">No matching pages.</p>`; return; }
+      out.innerHTML = `<ul class="search-results">${hits.map((node) => {
+        const parent = bySlug.get(parentOf.get(node.slug));
+        const parentLabel = parent ? `<span class="search-parent">${esc(parent.label)}</span>` : "";
+        return `<li><a href="${href(node.slug)}" data-nav><span>${esc(node.label)}</span>${parentLabel}</a></li>`;
+      }).join("")}</ul>`;
+    };
+    input.addEventListener("input", draw);
+    document.getElementById("search-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const first = searchHits(input.value)[0];
+      if (first) location.hash = href(first.slug).slice(1);
+    });
+    if (preset) input.value = preset;
+    input.focus();
+    draw();
+  }
+
+  function renderDrawer() {
+    const blocks = SECTIONS.map((section) => {
+      const open = openAcc.has(section.slug);
+      const links = (section.children || []).flatMap((child) => {
+          const rows = [`<a class="acc-l2" href="${href(child.slug)}" data-nav>${esc(child.label)}</a>`];
+          (child.children || []).forEach((g) => rows.push(`<a class="acc-l3" href="${href(g.slug)}" data-nav>${esc(g.label)}</a>`));
+          return rows;
+        }).join("");
+      return `<div class="acc"><div class="acc-row"><a class="acc-link" href="${href(section.slug)}" data-nav>${esc(section.label)}</a><button class="acc-toggle" type="button" aria-expanded="${open ? "true" : "false"}" aria-label="Show pages in ${esc(section.label)}" data-acc="${esc(section.slug)}">${chevron}</button></div>${open ? `<div class="acc-panel">${links}</div>` : ""}</div>`;
+    }).join("");
+    drawerBody.innerHTML = `<form class="drawer-search" id="drawer-search" role="search"><label class="search-label" for="drawer-query">Search the site</label><div class="search-field">${searchIcon}<input id="drawer-query" type="search" placeholder="Search the site" autocomplete="off"></div><div id="drawer-out"></div></form><div id="drawer-acc">${blocks}</div><div class="drawer-utils"><a class="util-btn" href="#/internships" data-nav>Work at the Zoo</a><a class="util-btn" href="#/membership" data-nav>Become a Member</a></div>`;
+    const query = document.getElementById("drawer-query");
+    const out = document.getElementById("drawer-out");
+    const acc = document.getElementById("drawer-acc");
+    query.addEventListener("input", () => {
+      const hits = searchHits(query.value);
+      acc.hidden = !!query.value.trim();
+      if (!query.value.trim()) { out.innerHTML = ""; return; }
+      out.innerHTML = hits.length
+        ? `<ul class="search-results">${hits.map((node) => `<li><a href="${href(node.slug)}" data-nav>${esc(node.label)}</a></li>`).join("")}</ul>`
+        : `<p class="search-empty">No matching pages.</p>`;
+    });
+    document.getElementById("drawer-search").addEventListener("submit", (event) => event.preventDefault());
+  }
+
+  function openMega(slug) {
+    window.clearTimeout(closeTimer);
+    mode = "mega";
+    megaSlug = slug;
+    renderMega(bySlug.get(slug));
+    paintChrome();
+  }
+  function openSearch() {
+    window.clearTimeout(closeTimer);
+    if (!desktop()) { openDrawer(); return; }
+    mode = "search";
+    megaSlug = null;
+    renderSearch();
+    paintChrome();
+  }
+  function openDrawer() {
+    window.clearTimeout(closeTimer);
+    mode = "drawer";
+    megaSlug = null;
+    renderDrawer();
+    paintChrome();
+    document.getElementById("drawer-close").focus();
+  }
+  function closeAll(restore) {
+    window.clearTimeout(closeTimer);
+    const was = mode;
+    mode = null;
+    megaSlug = null;
+    paintChrome();
+    if (restore && was === "drawer") menuToggle.focus();
+    if (restore && was === "search") searchToggle.focus();
+  }
+
+  header.addEventListener("pointerleave", (event) => {
+    if (mode !== "mega" && mode !== "search") return;
+    if (event.pointerType === "touch") return;
+    closeTimer = window.setTimeout(() => {
+      if (mode === "mega" || mode === "search") closeAll(false);
+    }, 180);
+  });
+  header.addEventListener("pointerenter", () => window.clearTimeout(closeTimer));
+  header.addEventListener("focusout", (event) => {
+    if (mode !== "mega" && mode !== "search") return;
+    if (!header.contains(event.relatedTarget)) closeAll(false);
+  });
+  scrim.addEventListener("click", () => closeAll(false));
+  searchToggle.addEventListener("click", () => {
+    if (mode === "search") closeAll(true);
+    else openSearch();
+  });
+  menuToggle.addEventListener("click", () => {
+    if (mode === "drawer") closeAll(true);
+    else openDrawer();
+  });
+  document.getElementById("drawer-close").addEventListener("click", () => closeAll(true));
+  drawerBody.addEventListener("click", (event) => {
+    const toggle = event.target.closest("[data-acc]");
+    if (!toggle) return;
+    const slug = toggle.getAttribute("data-acc");
+    if (openAcc.has(slug)) openAcc.delete(slug);
+    else openAcc.add(slug);
+    renderDrawer();
+    const next = drawerBody.querySelector(`[data-acc="${CSS.escape(slug)}"]`);
+    if (next) next.focus();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && mode) {
+      event.preventDefault();
+      closeAll(true);
+    }
+  });
+  desktopQuery.addEventListener("change", () => {
+    if (!desktop() && (mode === "mega" || mode === "search")) closeAll(false);
+    if (desktop() && mode === "drawer") closeAll(false);
+  });
+
+  function currentSlug() {
+    const raw = decodeURIComponent(location.hash.replace(/^#\/?/, "")).replace(/\/$/, "");
+    if (!raw) return "index";
+    return bySlug.has(raw) ? raw : null;
+  }
+
+  function renderPage() {
+    const slug = currentSlug();
+    if (!slug) {
+      document.title = "Page not found — Indiana Zooniversity";
+      main.innerHTML = `<article class="interior"><h1>Page not found</h1><p class="lede"><a href="#/">Back to home</a></p></article>`;
+      return;
+    }
+    if (slug === "index") {
+      const home = DATA.home;
+      document.title = "Indiana Zooniversity — Mega menu (hover)";
+      main.innerHTML = `<article class="hero"><p class="hero-eyebrow">${esc(home.eyebrow)}</p><h1>${esc(home.heading)}</h1><p class="lede">${esc(home.lede)}</p><a class="btn-strong" href="${href(home.actionSlug)}" data-nav>${esc(home.actionLabel)} <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M1 7h10.844L7.737 2.146 9.263.854 15.31 8l-6.047 7.146-1.526-1.292L11.844 9H1V7Z"/></svg></a></article><figure class="hero-figure"><img src="${esc(home.image)}" alt="${esc(home.alt)}"></figure>`;
+      return;
+    }
+    const node = bySlug.get(slug);
+    document.title = `${node.label} — Indiana Zooniversity`;
+    const trail = sectionTrail(slug);
+    const crumbs = [`<li><a href="#/">Home</a></li>`].concat(trail.map((item, i) => {
+      const last = i === trail.length - 1;
+      const body = last ? esc(item.label) : `<a href="${href(item.slug)}">${esc(item.label)}</a>`;
+      return `<li><span aria-hidden="true">/</span> ${body}</li>`;
+    })).join("");
+    const cards = (node.children || []).map((child) => `<a class="card" href="${href(child.slug)}" data-nav><strong>${esc(child.label)}</strong>${child.lede ? `<p>${esc(child.lede)}</p>` : ""}</a>`).join("");
+    const eyebrow = node.eyebrow ? `<p class="page-eyebrow">${esc(node.eyebrow)}</p>` : "";
+    main.innerHTML = `<article class="interior">${eyebrow}<nav aria-label="Breadcrumb"><ol class="crumbs">${crumbs}</ol></nav><h1>${esc(node.heading || node.label)}</h1>${node.lede ? `<p class="lede">${esc(node.lede)}</p>` : ""}${cards ? `<div class="card-grid">${cards}</div>` : ""}</article>`;
+  }
+
+  window.addEventListener("hashchange", () => {
+    closeAll(false);
+    renderPage();
+    main.focus?.();
+  });
+  renderPage();
+})();
+</script>
+</body>
+</html>
